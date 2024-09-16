@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/onsenui/css/onsen-css-components.min.css"
+    />
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <title>Capture Quotes</title>
+  </head>
+  <style>
+    #result {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 90vh;
+    }
+    #quote {
+      font-family: "Helvetica Neue", sans-serif;
+      font-size: 2em;
+      font-weight: 800;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    #author {
+      background-color: crimson;
+      color: white;
+      font-size: 16px;
+      font-weight: 300;
+      padding: 8px 16px;
+      display: none;
+    }
+  </style>
+  <body>
+    <ons-page>
+      <ons-toolbar>
+        <div class="center">CAPTURE QUOTES</div>
+        <div class="right">
+          <ons-toolbar-button>
+            <a download id="screenShoot" style="font-size: 32px">📷</a>
+          </ons-toolbar-button>
+        </div>
+      </ons-toolbar>
+      <ons-fab position="right bottom" onclick="generateIdea()">
+        <ons-icon icon="md-plus"></ons-icon>
+      </ons-fab>
+
+      <div id="result">
+        <h1 id="quote"></h1>
+        <p id="author"></p>
+      </div>
+    </ons-page>
+
+    <script>
+      async function generateIdea() {
+        const result = document.getElementById("result");
+        const quote = document.getElementById("quote");
+        const author = document.getElementById("author");
+        const screenShoot = document.getElementById("screenShoot");
+
+        const url = "https://quotes-api-self.vercel.app/quote";
+        const response = await fetch(url);
+
+        const api = await response.json();
+
+        quote.textContent = api.quote;
+        author.textContent = api.author;
+
+        author.style.display = "block";
+
+        let count = 0;
+
+        screenShoot.addEventListener("click", function () {
+          count && location.reload();
+
+          html2canvas(result).then((callback) => {
+            screenShoot.setAttribute("href", callback.toDataURL("image/png"));
+            screenShoot.textContent = "📥";
+            count = 1;
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
